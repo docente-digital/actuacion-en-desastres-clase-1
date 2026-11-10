@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="slides-format" content="viewport">
+<title>Emergencias Especiales y Gestión de Desastres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+@theme {
+  --color-bg: #F8FAFC;
+  --color-bg-deep: #EFF6FF;
+  --color-surface: #FFFFFF;
+  --color-text: #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748B;
+  --color-accent-1: #0891B2;
+  --color-accent-2: #34D399;
+  --color-accent-3: #DC2626;
+  --color-glass-bg: rgba(255,255,255,0.9);
+  --color-glass-border: rgba(0,0,0,0.08);
+  --color-vignette: rgba(0,0,0,0.05);
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+</style>
+<style>
+:root { --color-bg:#F8FAFC; --color-text:#0F172A; --glow-color-rgb: 8,145,178; }
+*,*::before,*::after{box-sizing:border-box;}
+html,body{background:var(--color-bg);margin:0;}
+body{font-family:var(--font-body);color:var(--color-text);overflow:hidden;height:100vh;width:100vw;font-size:20px;}
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;background:var(--color-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:scale(0.95);transition:opacity .7s ease,transform .7s ease;pointer-events:none;overflow:hidden;}
+.slide.active{opacity:1;transform:scale(1);pointer-events:all;}
+.slide>.content{position:relative;z-index:2;width:100%;max-width:1300px;padding:clamp(1.5rem,3.5vw,3.5rem);max-height:92vh;overflow-y:auto;}
+.slide>.content::-webkit-scrollbar{width:6px;}
+.slide>.content::-webkit-scrollbar-thumb{background:rgba(8,145,178,.3);border-radius:3px;}
+.nav-controls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:100;background:var(--color-glass-bg);backdrop-filter:blur(10px);padding:10px 24px;border-radius:40px;border:1px solid var(--color-glass-border);box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.nav-btn{width:40px;height:40px;border:none;background:#EFF6FF;color:var(--color-accent-1);border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s;}
+.nav-btn:hover{background:#DBEAFE;}
+.slide-dots{display:flex;gap:6px;flex-wrap:wrap;max-width:340px;}
+.slide-dots .dot{width:8px;height:8px;border-radius:50%;background:var(--color-glass-border);cursor:pointer;transition:background .3s,transform .3s;}
+.slide-dots .dot.active{background:var(--color-accent-1);transform:scale(1.4);}
+.slide-counter{font-size:.8rem;color:var(--color-text-muted);min-width:44px;text-align:center;}
+.reveal{opacity:0;transform:translateY(20px);}
+.gradient-mesh{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);animation:float-slow 12s ease-in-out infinite;}
+@keyframes float-slow{0%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,-30px) scale(1.1);}100%{transform:translate(0,0) scale(1);}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.slide::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center, transparent 55%, var(--color-vignette) 100%);}
+h1,h2,h3{font-family:var(--font-display);}
+.card{background:var(--color-surface);border:1px solid var(--color-glass-border);border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.zoomable{cursor:zoom-in;transition:transform .25s ease, box-shadow .25s ease;}
+.zoomable:hover{transform:scale(1.02);box-shadow:0 8px 30px rgba(0,0,0,.15);}
+#lightbox{position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:1000;display:none;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;}
+#lightbox.active{display:flex;}
+#lightbox img{max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+#lightbox-close{position:absolute;top:24px;right:34px;color:white;font-size:2.5rem;cursor:pointer;line-height:1;}
+.video-wrap{position:relative;width:100%;padding-bottom:52%;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.15);}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:#FEF2F2;color:#DC2626;font-weight:700;font-size:.85rem;padding:6px 14px;border-radius:20px;border:1px solid #FECACA;}
+.live-badge .dot-blink{width:8px;height:8px;border-radius:50%;background:#DC2626;animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.2s !important;}}
+</style>
+</head>
+<body>
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+<div id="lightbox"><span id="lightbox-close">&times;</span><img id="lightbox-img" src="" alt=""></div>
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide slide-1 active" data-slide="1">
+  <div class="gradient-mesh">
+    <div class="blob" style="width:500px;height:500px;top:-100px;right:-100px;background:var(--color-accent-1);opacity:.15;"></div>
+    <div class="blob" style="width:320px;height:320px;bottom:-80px;left:-60px;background:var(--color-accent-2);opacity:.14;"></div>
+    <div class="blob" style="width:220px;height:220px;top:40%;left:10%;background:var(--color-accent-3);opacity:.10;"></div>
+  </div>
+  <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+  <div class="content text-center">
+    <div class="text-[110px] mb-4 animate-[float_3s_ease-in-out_infinite] reveal">🚑</div>
+    <h1 class="text-[clamp(2.6rem,6vw,5rem)] font-black bg-linear-to-br from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent tracking-tight mb-5 reveal">Emergencias Especiales y<br>Gestión de Desastres</h1>
+    <p class="text-[clamp(1.1rem,1.8vw,1.6rem)] font-medium text-text-muted tracking-[3px] uppercase reveal">Clase virtual para el especialista en atención prehospitalaria</p>
+    <p class="text-lg text-text-secondary mt-6 reveal">Lic. Alejandra Ortiz &middot; Agosto &middot; 2026</p>
+  </div>
+</div>
+
+<!-- SLIDE 2: BIENVENIDA / COMO FUNCIONA LA CLASE -->
+<div class="slide slide-2" data-slide="2">
+  <div class="gradient-mesh"><div class="blob" style="width:350px;height:350px;top:-80px;right:-80px;background:var(--color-accent-1);opacity:.08;"></div><div class="blob" style="width:260px;height:260px;bottom:-60px;left:-40px;background:var(--color-accent-2);opacity:.07;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Bienvenidos a la clase en vivo</h2>
+    <p class="text-xl text-text-secondary reveal mb-6 leading-relaxed">Esta presentación está diseñada para resolverse <strong>en conjunto, en tiempo real</strong>. En varias diapositivas encontrarán una pregunta o caso: yo la leeré en voz alta y ustedes responderán por el chat o micrófono; luego revelaremos la respuesta correcta juntos.</p>
+    <div class="grid grid-cols-3 gap-6 mt-8">
+      <div class="card p-6 reveal hover:-translate-y-1 hover:shadow-xl transition">
+        <div class="text-4xl mb-3">💬</div>
+        <h3 class="text-xl font-bold mb-2">Preguntas en vivo</h3>
+        <p class="text-text-secondary text-lg">Respondan por el chat cuando vean el ícono de pregunta.</p>
+      </div>
+      <div class="card p-6 reveal hover:-translate-y-1 hover:shadow-xl transition">
+        <div class="text-4xl mb-3">🖼️</div>
+        <h3 class="text-xl font-bold mb-2">Imágenes ampliables</h3>
+        <p class="text-text-secondary text-lg">Hagan clic en cualquier imagen para verla en grande.</p>
+      </div>
+      <div class="card p-6 reveal hover:-translate-y-1 hover:shadow-xl transition">
+        <div class="text-4xl mb-3">🎬</div>
+        <h3 class="text-xl font-bold mb-2">Videos incluidos</h3>
+        <p class="text-text-secondary text-lg">Los veremos juntos y comentaremos al finalizar cada uno.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: AGENDA -->
+<div class="slide slide-3" data-slide="3">
+  <div class="gradient-mesh"><div class="blob" style="width:350px;height:350px;top:-80px;right:-80px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-8">Agenda de la clase</h2>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal flex items-start gap-4"><div class="w-10 h-10 rounded-full bg-accent-1 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">1</div><div><h4 class="font-bold text-lg">Fundamentos</h4><p class="text-text-secondary">Emergencia vs. desastre, tipos y clasificación</p></div></div>
+      <div class="card p-5 reveal flex items-start gap-4"><div class="w-10 h-10 rounded-full bg-accent-1 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">2</div><div><h4 class="font-bold text-lg">Ciclo de gestión de desastres</h4><p class="text-text-secondary">Mitigación, preparación, respuesta y recuperación</p></div></div>
+      <div class="card p-5 reveal flex items-start gap-4"><div class="w-10 h-10 rounded-full bg-accent-1 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">3</div><div><h4 class="font-bold text-lg">Sistema de Comando de Incidentes</h4><p class="text-text-secondary">Estructura, roles y comunicación</p></div></div>
+      <div class="card p-5 reveal flex items-start gap-4"><div class="w-10 h-10 rounded-full bg-accent-1 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">4</div><div><h4 class="font-bold text-lg">Triaje START</h4><p class="text-text-secondary">Clasificación de víctimas en incidentes masivos</p></div></div>
+      <div class="card p-5 reveal flex items-start gap-4"><div class="w-10 h-10 rounded-full bg-accent-1 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">5</div><div><h4 class="font-bold text-lg">Emergencias CBRNE</h4><p class="text-text-secondary">Niveles de EPP y zonificación</p></div></div>
+      <div class="card p-5 reveal flex items-start gap-4"><div class="w-10 h-10 rounded-full bg-accent-1 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">6</div><div><h4 class="font-bold text-lg">Salud mental y cierre</h4><p class="text-text-secondary">Autocuidado del respondedor y repaso final</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: DEFINICIONES -->
+<div class="slide slide-4" data-slide="4">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-60px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Emergencia vs. Desastre</h2>
+    <p class="text-xl text-text-secondary reveal mb-6 leading-relaxed">Como especialista prehospitalario debes distinguir claramente ambos conceptos, porque cambian por completo tu forma de actuar: en una emergencia tus recursos alcanzan; en un desastre, no.</p>
+    <div class="grid grid-cols-2 gap-6">
+      <div class="card p-7 reveal border-l-4" style="border-left-color:var(--color-accent-2);">
+        <h3 class="text-2xl font-bold mb-3 text-accent-1">Emergencia</h3>
+        <p class="text-lg text-text-secondary leading-relaxed">Evento súbito que amenaza la vida o salud de una o pocas personas, pero <strong>los recursos locales disponibles son suficientes</strong> para responder de forma normal. Ejemplo: un accidente de tránsito con dos heridos.</p>
+      </div>
+      <div class="card p-7 reveal border-l-4" style="border-left-color:var(--color-accent-3);">
+        <h3 class="text-2xl font-bold mb-3 text-accent-3">Desastre</h3>
+        <p class="text-lg text-text-secondary leading-relaxed">Evento que <strong>supera la capacidad de respuesta local</strong> y obliga a reorganizar recursos, pedir ayuda externa y priorizar según triaje. Ejemplo: inundación que afecta a un barrio entero.</p>
+      </div>
+    </div>
+    <div class="card p-5 mt-6 reveal" style="background:#FFFBEB;border-color:#FDE68A;">
+      <p class="text-lg"><span class="live-badge">🔴 <span class="dot-blink"></span> EN VIVO</span> &nbsp; <strong>Pregunta:</strong> ¿Un choque múltiple de 15 autos en la ruta con solo 1 ambulancia disponible en la zona es emergencia o desastre? Respondan en el chat.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: TIPOS DE DESASTRES -->
+<div class="slide slide-5" data-slide="5">
+  <div class="gradient-mesh"><div class="blob" style="width:320px;height:320px;top:-70px;right:-70px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Tipos de desastres</h2>
+    <p class="text-lg text-text-secondary reveal mb-6">Clasificar el tipo de desastre te ayuda a anticipar qué tipo de lesiones y riesgos vas a encontrar en la escena.</p>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal"><div class="text-3xl mb-2">🌪️</div><h4 class="font-bold text-lg mb-1">Naturales</h4><p class="text-text-secondary">Inundaciones, sequías, tormentas, terremotos. En Paraguay: crecidas del río Paraguay y sequías prolongadas.</p></div>
+      <div class="card p-5 reveal"><div class="text-3xl mb-2">🏭</div><h4 class="font-bold text-lg mb-1">Antropogénicos</h4><p class="text-text-secondary">Causados por el ser humano: incendios industriales, derrames, colapsos estructurales.</p></div>
+      <div class="card p-5 reveal"><div class="text-3xl mb-2">☢️</div><h4 class="font-bold text-lg mb-1">CBRNE</h4><p class="text-text-secondary">Químico, Biológico, Radiológico, Nuclear y Explosivos: requieren protocolos y EPP especiales.</p></div>
+      <div class="card p-5 reveal"><div class="text-3xl mb-2">🦠</div><h4 class="font-bold text-lg mb-1">Sanitarios</h4><p class="text-text-secondary">Epidemias y pandemias que colapsan el sistema de salud, como se vio con COVID-19.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: CICLO DE GESTION - INTRO + IMAGEN -->
+<div class="slide slide-6" data-slide="6">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">El ciclo de gestión de desastres</h2>
+    <div class="grid grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="text-xl text-text-secondary reveal leading-relaxed mb-4">La gestión de desastres no es un evento único, sino un <strong>ciclo continuo de 4 fases</strong> que se repite antes, durante y después de cada evento. Entender en qué fase estás te dice exactamente qué tareas te corresponden como especialista APH.</p>
+        <p class="text-lg text-text-secondary reveal">Vamos a revisar cada fase en detalle en las próximas diapositivas.</p>
+      </div>
+      <img src="https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a990d0d182cc63e6d8b5345f81e18b3f923aa7cd.jpg" alt="Ciclo de gestión de desastres" class="zoomable rounded-2xl w-full reveal" onclick="openLightbox(this.src)">
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: MITIGACION -->
+<div class="slide slide-7" data-slide="7">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-60px;background:var(--color-accent-2);opacity:.09;"></div></div>
+  <div class="content">
+    <div class="flex items-center gap-3 mb-4 reveal"><span class="text-3xl">🛡️</span><h2 class="text-[clamp(1.9rem,3.5vw,2.6rem)] font-bold">Fase 1: Mitigación</h2></div>
+    <p class="text-xl text-text-secondary reveal mb-5 leading-relaxed">Son las acciones tomadas <strong>antes</strong> de que ocurra el desastre para reducir su impacto o incluso evitarlo. No se trata de responder, sino de disminuir el riesgo futuro.</p>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 1</h4><p class="text-text-secondary">Identificar zonas de riesgo en tu área de cobertura (ej. calles que se inundan).</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 2</h4><p class="text-text-secondary">Participar en capacitaciones comunitarias de prevención.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 3</h4><p class="text-text-secondary">Reportar fallas de infraestructura que aumenten el riesgo (postes, puentes).</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: PREPARACION -->
+<div class="slide slide-8" data-slide="8">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;left:-60px;background:var(--color-accent-1);opacity:.09;"></div></div>
+  <div class="content">
+    <div class="flex items-center gap-3 mb-4 reveal"><span class="text-3xl">🎒</span><h2 class="text-[clamp(1.9rem,3.5vw,2.6rem)] font-bold">Fase 2: Preparación</h2></div>
+    <p class="text-xl text-text-secondary reveal mb-5 leading-relaxed">Ocurre también antes del evento, pero se enfoca en <strong>estar listo para responder</strong>: planes, entrenamientos, equipamiento e insumos verificados.</p>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 1</h4><p class="text-text-secondary">Verificar que el kit y la ambulancia tengan stock completo cada turno.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 2</h4><p class="text-text-secondary">Conocer tu rol asignado dentro del Plan de Operaciones de Emergencia (EOP).</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 3</h4><p class="text-text-secondary">Practicar simulacros de triaje y manejo de víctimas múltiples.</p></div>
+    </div>
+    <div class="card p-5 mt-6 reveal" style="background:#FFFBEB;border-color:#FDE68A;">
+      <p class="text-lg"><span class="live-badge">🔴 <span class="dot-blink"></span> EN VIVO</span> &nbsp; <strong>Reflexión:</strong> ¿Cuándo revisaste por última vez el stock de tu unidad? Compartan en el chat.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: RESPUESTA -->
+<div class="slide slide-9" data-slide="9">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;bottom:-60px;right:-60px;background:var(--color-accent-3);opacity:.09;"></div></div>
+  <div class="content">
+    <div class="flex items-center gap-3 mb-4 reveal"><span class="text-3xl">🚨</span><h2 class="text-[clamp(1.9rem,3.5vw,2.6rem)] font-bold">Fase 3: Respuesta</h2></div>
+    <p class="text-xl text-text-secondary reveal mb-5 leading-relaxed">Es la acción inmediata <strong>durante y justo después</strong> del desastre: salvar vidas, estabilizar y trasladar. Aquí se activan el triaje, el Sistema de Comando de Incidentes y los protocolos CBRNE si aplica.</p>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 1</h4><p class="text-text-secondary">Reportarte al Comandante de Incidente al llegar a la escena.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 2</h4><p class="text-text-secondary">Aplicar triaje START y priorizar traslados según color.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 3</h4><p class="text-text-secondary">Comunicar constantemente el estado de recursos disponibles.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: RECUPERACION -->
+<div class="slide slide-10" data-slide="10">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-60px;background:var(--color-accent-2);opacity:.09;"></div></div>
+  <div class="content">
+    <div class="flex items-center gap-3 mb-4 reveal"><span class="text-3xl">🔄</span><h2 class="text-[clamp(1.9rem,3.5vw,2.6rem)] font-bold">Fase 4: Recuperación</h2></div>
+    <p class="text-xl text-text-secondary reveal mb-5 leading-relaxed">Comienza cuando la fase crítica termina y busca <strong>restaurar la normalidad</strong>: reabastecimiento, informes, apoyo psicológico y análisis de lo actuado (debriefing).</p>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 1</h4><p class="text-text-secondary">Reabastecer y desinfectar la unidad y el equipo utilizado.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 2</h4><p class="text-text-secondary">Completar la documentación e informes del incidente.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">✅ Tarea 3</h4><p class="text-text-secondary">Participar en el debriefing y buscar apoyo emocional si es necesario.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: ENCUESTA CICLO -->
+<div class="slide slide-11" data-slide="11">
+  <div class="gradient-mesh"><div class="blob" style="width:340px;height:340px;top:-70px;left:-70px;background:var(--color-accent-1);opacity:.09;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> ACTIVIDAD EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">Caso práctico: ubica la fase</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal">
+      <p class="text-xl text-text-secondary leading-relaxed">"Terminó la inundación en tu zona. Tu equipo ya trasladó a todos los pacientes graves y ahora te piden completar el informe del turno y limpiar la ambulancia."</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Respondan en el chat: ¿mitigación, preparación, respuesta o recuperación? Lo resolvemos juntos en 1 minuto.</p>
+  </div>
+</div>
+
+<!-- SLIDE 12: EOP INTRO -->
+<div class="slide slide-12" data-slide="12">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;right:-70px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Plan de Operaciones de Emergencia (EOP)</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-6">El EOP es el documento maestro que define <strong>quién hace qué, cuándo y con qué recursos</strong> durante una emergencia. Sin un EOP claro, cada persona actúa por su cuenta y se pierden minutos vitales en confusión. Como especialista APH, debes conocer al menos las partes que te afectan directamente.</p>
+    <p class="text-lg text-text-secondary reveal">Veamos sus componentes principales, divididos en dos partes para no saturar la diapositiva.</p>
+  </div>
+</div>
+
+<!-- SLIDE 13: EOP PARTE 1 -->
+<div class="slide slide-13" data-slide="13">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Componentes del EOP (1/2)</h2>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-1);"><h4 class="font-bold text-lg mb-1">1. Propósito y alcance</h4><p class="text-text-secondary">Define qué tipos de eventos cubre el plan.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-1);"><h4 class="font-bold text-lg mb-1">2. Análisis de riesgo</h4><p class="text-text-secondary">Identifica las amenazas más probables de la zona.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-1);"><h4 class="font-bold text-lg mb-1">3. Niveles de activación</h4><p class="text-text-secondary">Clasifica la gravedad y qué recursos se movilizan en cada nivel.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-1);"><h4 class="font-bold text-lg mb-1">4. Estructura organizativa</h4><p class="text-text-secondary">Define el Sistema de Comando de Incidentes (lo veremos a continuación).</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: EOP PARTE 2 -->
+<div class="slide slide-14" data-slide="14">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Componentes del EOP (2/2)</h2>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-3);"><h4 class="font-bold text-lg mb-1">5. Comunicaciones</h4><p class="text-text-secondary">Canales de radio, jerarquía de reporte y palabras clave.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-3);"><h4 class="font-bold text-lg mb-1">6. Logística</h4><p class="text-text-secondary">Ubicación de insumos, combustible y puntos de reabastecimiento.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-3);"><h4 class="font-bold text-lg mb-1">7. Evacuación y transporte masivo</h4><p class="text-text-secondary">Rutas, puntos de encuentro y prioridad de traslado por triaje.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-3);"><h4 class="font-bold text-lg mb-1">8. Recuperación y evaluación</h4><p class="text-text-secondary">Cómo se cierra el evento y se documentan las lecciones aprendidas.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: SCI INTRO + IMAGEN -->
+<div class="slide slide-15" data-slide="15">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;left:-60px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Sistema de Comando de Incidentes (SCI)</h2>
+    <div class="grid grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="text-xl text-text-secondary reveal leading-relaxed mb-4">El SCI es una estructura jerárquica estandarizada que evita el caos en la escena: <strong>cada persona reporta a una sola cabeza</strong>, sin importar cuántas instituciones respondan (bomberos, policía, ambulancias).</p>
+        <p class="text-lg text-text-secondary reveal">Al llegar a un desastre, lo primero que debes hacer es identificar quién es el Comandante de Incidente y reportarte ante él antes de actuar por tu cuenta.</p>
+      </div>
+      <img src="https://pplx-res.cloudinary.com/image/upload/pplx_search_images/dcf62d5d7ab5f17307d9e1bc6e2661b947f02b65.jpg" alt="Estructura del Sistema de Comando de Incidentes" class="zoomable rounded-2xl w-full reveal" onclick="openLightbox(this.src)">
+      </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: VIDEO SCI -->
+<div class="slide slide-16" data-slide="16">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;right:-60px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-5">Video: el SCI explicado</h2>
+    <div class="video-wrap reveal">
+      <iframe src="https://www.youtube.com/embed/FseyOejZHcE" title="ICS Explained" allowfullscreen></iframe>
+    </div>
+    <p class="text-lg text-text-muted mt-4 reveal">Lo miramos juntos ahora (8 min) y después comentamos qué sección del SCI corresponde al área médica.</p>
+  </div>
+</div>
+
+<!-- SLIDE 17: ROLES SCI -->
+<div class="slide slide-17" data-slide="17">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Roles clave del SCI para el especialista APH</h2>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">👤 Comandante de Incidente</h4><p class="text-text-secondary text-lg">Autoridad máxima en la escena. Toma decisiones estratégicas generales.</p></div>
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">⚕️ Jefe de Sección Médica</h4><p class="text-text-secondary text-lg">Coordina triaje, tratamiento y transporte de víctimas. Es tu jefe directo en la escena.</p></div>
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">🏷️ Líder de Triaje</h4><p class="text-text-secondary text-lg">Dirige la clasificación inicial de todas las víctimas encontradas.</p></div>
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">🚑 Líder de Transporte</h4><p class="text-text-secondary text-lg">Asigna qué ambulancia lleva a qué paciente y a qué hospital.</p></div>
+    </div>
+    <div class="card p-5 mt-6 reveal" style="background:#FFFBEB;border-color:#FDE68A;">
+      <p class="text-lg"><span class="live-badge">🔴 <span class="dot-blink"></span> EN VIVO</span> &nbsp; <strong>Pregunta:</strong> Si tú llegas y no ves ninguna cinta de triaje colocada aún, ¿a quién reportas primero? Escriban su respuesta.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: TRIAGE INTRO -->
+<div class="slide slide-18" data-slide="18">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;right:-60px;background:var(--color-accent-3);opacity:.09;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Triaje START: clasificar antes de tratar</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-5">START significa <em>Simple Triage And Rapid Treatment</em>. La razón de existir de este método es simple: cuando hay más víctimas que rescatistas, <strong>atender al primero que ves puede costarle la vida a otro más grave</strong>. Por eso primero se clasifica a todos, y recién después se trata según prioridad.</p>
+    <p class="text-lg text-text-secondary reveal">Cada evaluación debe tomar máximo 30 segundos por víctima, usando la regla <strong>RPM: Respiración, Perfusión, Mental</strong>.</p>
+  </div>
+</div>
+
+<!-- SLIDE 19: TRIAGE COLORES + IMAGEN -->
+<div class="slide slide-19" data-slide="19">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;bottom:-60px;left:-60px;background:var(--color-accent-3);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Las cuatro categorías de color</h2>
+    <div class="grid grid-cols-2 gap-8 items-center">
+      <div class="grid grid-cols-1 gap-3">
+        <div class="card p-4 reveal border-l-4" style="border-left-color:#DC2626;"><strong class="text-red-600">🔴 Rojo — Inmediato</strong><p class="text-text-secondary">Riesgo vital: requiere atención en minutos.</p></div>
+        <div class="card p-4 reveal border-l-4" style="border-left-color:#EAB308;"><strong class="text-yellow-600">🟡 Amarillo — Diferido</strong><p class="text-text-secondary">Grave pero estable: puede esperar 1-2 horas.</p></div>
+        <div class="card p-4 reveal border-l-4" style="border-left-color:#22C55E;"><strong class="text-green-600">🟢 Verde — Leve</strong><p class="text-text-secondary">Camina y respira bien: sin riesgo vital inmediato.</p></div>
+        <div class="card p-4 reveal border-l-4" style="border-left-color:#0F172A;"><strong>⚫ Negro — Fallecido</strong><p class="text-text-secondary">Sin respiración tras abrir la vía aérea: no se reanima en un MCI.</p></div>
+      </div>
+      <img src="https://pplx-res.cloudinary.com/image/upload/pplx_search_images/0f8dda364178b55fee7287e01add3af4425e6ada.jpg" alt="Flujograma de triaje START" class="zoomable rounded-2xl w-full reveal" onclick="openLightbox(this.src)">
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: RPM DETALLE -->
+<div class="slide slide-20" data-slide="20">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-60px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">La regla RPM paso a paso</h2>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">R — Respiración</h4><p class="text-text-secondary text-lg">Si no respira tras abrir vía aérea → negro. Si respira &gt;30/min → rojo. Si respira &lt;30/min → sigue a perfusión.</p></div>
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">P — Perfusión</h4><p class="text-text-secondary text-lg">Sin pulso radial o relleno capilar &gt;2seg → rojo. Con pulso → sigue a estado mental.</p></div>
+      <div class="card p-6 reveal"><h4 class="font-bold text-xl mb-2">M — Mental</h4><p class="text-text-secondary text-lg">No obedece órdenes simples → rojo. Obedece → amarillo.</p></div>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Explicación clave: solo se realizan "maniobras salvadoras" durante el triaje (abrir vía aérea, controlar hemorragia masiva), nunca tratamiento completo — eso viene después.</p>
+  </div>
+</div>
+
+<!-- SLIDE 21: VIDEO TRIAGE -->
+<div class="slide slide-21" data-slide="21">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;right:-60px;background:var(--color-accent-3);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-5">Video: START en acción</h2>
+    <div class="video-wrap reveal">
+      <iframe src="https://www.youtube.com/embed/nfBJGeAdu5o" title="START Triage for EMT/Paramedic Students" allowfullscreen></iframe>
+    </div>
+    <p class="text-lg text-text-muted mt-4 reveal">Míralo conmigo (7 min). Al terminar, resolveremos juntos un caso de práctica en la siguiente diapositiva.</p>
+  </div>
+</div>
+
+<!-- SLIDE 22: CASO PRACTICO TRIAGE EN VIVO -->
+<div class="slide slide-22" data-slide="22">
+  <div class="gradient-mesh"><div class="blob" style="width:340px;height:340px;top:-70px;left:-70px;background:var(--color-accent-3);opacity:.09;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> ACTIVIDAD EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">Clasifica esta víctima conmigo</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal text-left">
+      <p class="text-xl text-text-secondary leading-relaxed">"Encuentras a un hombre tirado, no responde a la voz. Al abrir su vía aérea comienza a respirar espontáneamente a 34 respiraciones por minuto."</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Escriban en el chat qué color le asignan y por qué. Lo resolvemos en voz alta.</p>
+  </div>
+</div>
+
+<!-- SLIDE 23: CBRNE INTRO -->
+<div class="slide slide-23" data-slide="23">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;right:-60px;background:var(--color-accent-3);opacity:.09;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Emergencias CBRNE</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-5">CBRNE agrupa incidentes Químicos, Biológicos, Radiológicos, Nucleares y Explosivos. La regla de oro es: <strong>tu propia seguridad va primero</strong>. Un especialista contaminado ya no puede ayudar a nadie y se convierte en una víctima más.</p>
+    <p class="text-lg text-text-secondary reveal">Por eso, antes de entrar a la escena, siempre se identifican zonas y se selecciona el nivel de Equipo de Protección Personal (EPP) adecuado.</p>
+  </div>
+</div>
+
+<!-- SLIDE 24: ZONIFICACION -->
+<div class="slide slide-24" data-slide="24">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;bottom:-60px;left:-60px;background:var(--color-accent-3);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Zonificación de la escena</h2>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-6 reveal" style="border-top:4px solid #DC2626;"><h4 class="font-bold text-xl mb-2">🔥 Zona caliente</h4><p class="text-text-secondary text-lg">Contacto directo con el agente peligroso. Solo personal con EPP máximo entra aquí.</p></div>
+      <div class="card p-6 reveal" style="border-top:4px solid #EAB308;"><h4 class="font-bold text-xl mb-2">🟠 Zona tibia</h4><p class="text-text-secondary text-lg">Zona de descontaminación. Aquí se realiza el triaje inicial una vez descontaminada la víctima.</p></div>
+      <div class="card p-6 reveal" style="border-top:4px solid #22C55E;"><h4 class="font-bold text-xl mb-2">🟢 Zona fría</h4><p class="text-text-secondary text-lg">Área segura donde se ubican ambulancias, tratamiento definitivo y comando.</p></div>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Como especialista APH, tu ambulancia y tú deben operar siempre en zona fría, recibiendo pacientes ya descontaminados.</p>
+  </div>
+</div>
+
+<!-- SLIDE 25: NIVELES EPP + IMAGEN -->
+<div class="slide slide-25" data-slide="25">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-60px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Niveles de Equipo de Protección Personal</h2>
+    <div class="grid grid-cols-2 gap-8 items-center">
+      <div class="grid grid-cols-1 gap-3">
+        <div class="card p-4 reveal"><strong>Nivel A</strong> — Protección máxima: traje totalmente encapsulado con suministro de aire autónomo. Para el agente más peligroso conocido.</div>
+        <div class="card p-4 reveal"><strong>Nivel B</strong> — Máxima protección respiratoria, menor protección de piel.</div>
+        <div class="card p-4 reveal"><strong>Nivel C</strong> — Protección respiratoria con filtro (no aire autónomo); el agente ya está identificado y es de menor riesgo.</div>
+        <div class="card p-4 reveal"><strong>Nivel D</strong> — Uniforme de trabajo estándar; sin riesgo respiratorio significativo.</div>
+      </div>
+      <img src="https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1752cbc6c94bf34a498d117188cb172921cee6f8.jpg" alt="Niveles de EPP CBRN" class="zoomable rounded-2xl w-full reveal" onclick="openLightbox(this.src)">
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 26: ENCUESTA CBRNE -->
+<div class="slide slide-26" data-slide="26">
+  <div class="gradient-mesh"><div class="blob" style="width:340px;height:340px;bottom:-70px;right:-70px;background:var(--color-accent-1);opacity:.09;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> ACTIVIDAD EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">¿Qué nivel de EPP usarías?</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal">
+      <p class="text-xl text-text-secondary leading-relaxed">"Se reporta un derrame de una sustancia química ya identificada, de riesgo respiratorio moderado, en una fábrica."</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Escriban A, B, C o D en el chat y justifiquen brevemente.</p>
+  </div>
+</div>
+
+<!-- SLIDE 27: EVACUACION MASIVA -->
+<div class="slide slide-27" data-slide="27">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Evacuación y transporte en masa</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-5">Cuando el número de víctimas supera la capacidad normal de transporte, se activa un plan de transporte masivo: se agrupan pacientes por color de triaje y se distribuyen entre múltiples hospitales para <strong>evitar saturar uno solo</strong>.</p>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold text-lg mb-1">Prioridad de traslado</h4><p class="text-text-secondary">Rojo primero, luego amarillo, luego verde (si hay espacio).</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold text-lg mb-1">Distribución hospitalaria</h4><p class="text-text-secondary">El Líder de Transporte coordina con los hospitales receptores antes de enviar pacientes.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 28: MCI IMAGEN REAL -->
+<div class="slide slide-28" data-slide="28">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;bottom:-60px;right:-60px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Así se ve un incidente con múltiples víctimas</h2>
+    <div class="grid grid-cols-2 gap-6">
+      <img src="https://pplx-res.cloudinary.com/image/upload/pplx_search_images/975e71d61a95eb8d2f9960125a8d6b99fb3c5ab1.jpg" alt="Escena de incidente con múltiples víctimas" class="zoomable rounded-2xl w-full reveal" onclick="openLightbox(this.src)">
+      <img src="https://pplx-res.cloudinary.com/image/upload/pplx_search_images/346a74a4c3ddce892d06b5c1fdf7d815e44ebb8f.jpg" alt="Paramédico atendiendo víctima en escena de desastre" class="zoomable rounded-2xl w-full reveal" onclick="openLightbox(this.src)">
+    </div>
+    <p class="text-lg text-text-muted mt-5 reveal">Observen: cada equipo tiene una tarea específica y nadie actúa fuera de su rol asignado por el SCI.</p>
+  </div>
+</div>
+
+<!-- SLIDE 29: PARAGUAY CONTEXTO -->
+<div class="slide slide-29" data-slide="29">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;right:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Gestión de desastres en Paraguay</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-5">En nuestro país, la <strong>Secretaría de Emergencia Nacional (SEN)</strong> es la entidad que coordina la respuesta a nivel nacional, activando el EOP y trabajando junto a bomberos, Cruz Roja y sistemas de emergencia médica.</p>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold text-lg mb-1">🌊 Riesgo principal: inundaciones</h4><p class="text-text-secondary">Crecidas del río Paraguay afectan recurrentemente zonas ribereñas de Asunción y el Chaco.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold text-lg mb-1">☀️ Riesgo secundario: sequías</h4><p class="text-text-secondary">Afectan el suministro de agua y elevan el riesgo de incendios rurales.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 30: SALUD MENTAL INTRO -->
+<div class="slide slide-30" data-slide="30">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">Salud mental en la escena del desastre</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-5">Las víctimas de un desastre sufren no solo lesiones físicas, sino también <strong>shock psicológico agudo</strong>. Los Primeros Auxilios Psicológicos (PAP) buscan estabilizar emocionalmente sin reemplazar terapia profesional.</p>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">👂 Escuchar</h4><p class="text-text-secondary">Sin juzgar ni minimizar lo que sienten.</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">🛡️ Proteger</h4><p class="text-text-secondary">Alejar de estímulos que agraven el shock (imágenes, ruido).</p></div>
+      <div class="card p-5 reveal"><h4 class="font-bold mb-2">🔗 Conectar</h4><p class="text-text-secondary">Enlazar con familiares y recursos de apoyo disponibles.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 31: AUTOCUIDADO -->
+<div class="slide slide-31" data-slide="31">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;right:-60px;background:var(--color-accent-3);opacity:.08;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2.2rem,4vw,3rem)] font-bold reveal mb-6">El autocuidado del respondedor</h2>
+    <p class="text-xl text-text-secondary reveal leading-relaxed mb-5">Estar expuesto repetidamente al sufrimiento ajeno tiene un costo psicológico real. La <strong>fatiga por compasión</strong> y el <strong>burnout</strong> son riesgos ocupacionales serios en atención prehospitalaria, y reconocerlos a tiempo evita errores graves en escena.</p>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-3);"><h4 class="font-bold text-lg mb-1">Señales de alerta</h4><p class="text-text-secondary">Irritabilidad constante, insomnio, desconexión emocional con los pacientes.</p></div>
+      <div class="card p-5 reveal border-l-4" style="border-left-color:var(--color-accent-2);"><h4 class="font-bold text-lg mb-1">Qué hacer</h4><p class="text-text-secondary">Participar en el debriefing post-incidente y buscar apoyo psicológico institucional sin estigma.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 32: ENCUESTA FINAL SALUD MENTAL -->
+<div class="slide slide-32" data-slide="32">
+  <div class="gradient-mesh"><div class="blob" style="width:340px;height:340px;top:-70px;left:-70px;background:var(--color-accent-2);opacity:.09;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> ACTIVIDAD EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">Practica un mensaje de PAP</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal text-left">
+      <p class="text-xl text-text-secondary leading-relaxed">"Una mujer acaba de perder su casa en una inundación y está en shock, sin hablar, mirando al vacío."</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Escriban en el chat una frase breve que usarían para iniciar contacto con ella. Comentamos varias respuestas en vivo.</p>
+  </div>
+</div>
+
+<!-- SLIDE 33: REPASO 1 -->
+<div class="slide slide-33" data-slide="33">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;right:-60px;background:var(--color-accent-1);opacity:.08;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> REPASO EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">Pregunta 1</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal">
+      <p class="text-xl text-text-secondary">¿Cuáles son las 4 fases del ciclo de gestión de desastres, en orden?</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Escriban su respuesta en el chat antes de que avancemos.</p>
+  </div>
+</div>
+
+<!-- SLIDE 34: REPASO 2 -->
+<div class="slide slide-34" data-slide="34">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;left:-60px;background:var(--color-accent-3);opacity:.08;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> REPASO EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">Pregunta 2</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal">
+      <p class="text-xl text-text-secondary">¿Qué significan las siglas RPM en el triaje START?</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Escriban su respuesta en el chat.</p>
+  </div>
+</div>
+
+<!-- SLIDE 35: REPASO 3 -->
+<div class="slide slide-35" data-slide="35">
+  <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;bottom:-70px;left:-60px;background:var(--color-accent-2);opacity:.08;"></div></div>
+  <div class="content text-center">
+    <span class="live-badge reveal">🔴 <span class="dot-blink"></span> REPASO EN VIVO</span>
+    <h2 class="text-[clamp(2rem,4vw,2.8rem)] font-bold reveal mt-5 mb-6">Pregunta 3</h2>
+    <div class="card p-8 max-w-3xl mx-auto reveal">
+      <p class="text-xl text-text-secondary">¿Cuál es la "regla de oro" al enfrentar una emergencia CBRNE?</p>
+    </div>
+    <p class="text-lg text-text-muted mt-6 reveal">Escriban su respuesta en el chat.</p>
+  </div>
+</div>
+
+<!-- SLIDE 36: REFERENCIAS -->
+<div class="slide slide-36" data-slide="36">
+  <div class="gradient-mesh"><div class="blob" style="width:280px;height:280px;top:-60px;right:-60px;background:var(--color-accent-1);opacity:.07;"></div></div>
+  <div class="content">
+    <h2 class="text-[clamp(2rem,3.6vw,2.6rem)] font-bold reveal mb-6">Referencias y fuentes</h2>
+    <ul class="text-lg text-text-secondary reveal space-y-3 list-disc pl-6">
+      <li>FEMA — Incident Command System Resources (ICS-100/200), 2024.</li>
+      <li>OSHA — HAZWOPER PPE Levels A-D Standards, actualizado 2023.</li>
+      <li>NAEMT — PHTLS: Prehospital Trauma Life Support, 9na edición.</li>
+      <li>Secretaría de Emergencia Nacional del Paraguay (SEN) — Plan Nacional de Gestión de Riesgos.</li>
+      <li>Beam, B. — HEROES Program, University of Nebraska Medical Center, START Triage Basics.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SLIDE 37: CIERRE -->
+<div class="slide slide-37" data-slide="37">
+  <div class="gradient-mesh">
+    <div class="blob" style="width:480px;height:480px;top:-100px;left:-100px;background:var(--color-accent-1);opacity:.15;"></div>
+    <div class="blob" style="width:320px;height:320px;bottom:-80px;right:-60px;background:var(--color-accent-2);opacity:.13;"></div>
+    <div class="blob" style="width:220px;height:220px;top:40%;right:15%;background:var(--color-accent-3);opacity:.1;"></div>
+  </div>
+  <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+  <div class="content text-center">
+    <div class="text-[100px] mb-4 animate-[float_3s_ease-in-out_infinite] reveal">🎓</div>
+    <h1 class="text-[clamp(2.4rem,5.5vw,4.2rem)] font-black bg-linear-to-br from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent tracking-tight mb-5 reveal">¡Gracias por participar!</h1>
+    <p class="text-xl text-text-muted tracking-[3px] uppercase reveal">Especialistas listos para responder</p>
+    <p class="text-lg text-text-secondary mt-6 reveal">Lic. Alejandra Ortiz &middot; Preguntas abiertas en el chat</p>
+  </div>
+</div>
+
+</div>
+
+<div class="nav-controls">
+  <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+  <span class="slide-counter" id="counter">1 / 37</span>
+</div>
+
+<script>
+let current = 1;
+const total = document.querySelectorAll('.slide').length;
+const dotsContainer = document.getElementById('dots');
+const counter = document.getElementById('counter');
+for (let i = 1; i <= total; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 1 ? ' active' : ''); dot.onclick = () => goToSlide(i); dotsContainer.appendChild(dot); }
+function goToSlide(n) {
+  const prev = document.querySelector('.slide.active');
+  const next = document.querySelector(`.slide[data-slide="${n}"]`);
+  if (prev) prev.classList.remove('active');
+  if (next) { next.classList.add('active'); animateSlide(next); }
+  current = n; updateNav();
+}
+function changeSlide(dir) { let next = current + dir; if (next < 1) next = total; if (next > total) next = 1; goToSlide(next); }
+function updateNav() { document.querySelectorAll('.dot').forEach((d, i) => { d.classList.toggle('active', i + 1 === current); }); counter.textContent = current + ' / ' + total; }
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('lightbox').classList.contains('active')) { if (e.key === 'Escape') closeLightbox(); return; }
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); }
+});
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1); });
+
+function animateSlide(slide) {
+  slide.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transition = 'none'; el.style.opacity = '0'; el.style.transform = 'translateY(20px)';
+    el.offsetHeight;
+    const delay = i * 0.06;
+    el.style.transition = `opacity 0.35s ease ${delay}s, transform 0.35s ease ${delay}s`;
+    el.style.opacity = '1'; el.style.transform = 'translateY(0px)';
+  });
+}
+
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+document.getElementById('lightbox').addEventListener('click', (e) => { if (e.target.id === 'lightbox' || e.target.id === 'lightbox-close') closeLightbox(); });
+
+document.addEventListener('mousemove', (e) => {
+  const spotlight = document.querySelector('.mouse-spotlight');
+  if (spotlight) {
+    const rgb = getComputedStyle(document.documentElement).getPropertyValue('--glow-color-rgb').trim() || '8,145,178';
+    spotlight.style.background = `radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(${rgb}, 0.05), transparent 40%)`;
+  }
+});
+
+window.initParticles = function(canvas, options) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  const count = options.count || 40;
+  const rgb = getComputedStyle(document.documentElement).getPropertyValue('--glow-color-rgb').trim() || '8,145,178';
+  const [r,g,b] = rgb.split(',').map(Number);
+  const particles = Array.from({length: count}, () => ({
+    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+    vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+    size: Math.random()*2.5+0.8, alpha: Math.random()*0.3+0.08
+  }));
+  (function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x<0) p.x=canvas.width; if (p.x>canvas.width) p.x=0;
+      if (p.y<0) p.y=canvas.height; if (p.y>canvas.height) p.y=0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha})`; ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  })();
+};
+document.querySelectorAll('.particle-canvas').forEach(c => window.initParticles(c, {count:40}));
+
+try { animateSlide(document.querySelector('.slide.active')); } catch(e) { console.warn(e); }
+</script>
+</body>
+</html>
